@@ -1,10 +1,62 @@
+#include <memory>
 #include <print>
 #include <cassert>
 #include <string>
 #include <regex>
 #include <filesystem>
+#include <unordered_map>
 
 constexpr std::string_view filenameRegex { "^([0-9]{6})_([a-zA-Z_]+)\\.(up)\\.sql" };
+
+class SubCommandHandler {
+public:
+    virtual void execute() = 0;
+    virtual ~SubCommandHandler() = default;
+};
+
+class NewHandler : public SubCommandHandler {
+    void execute() override {
+        std::println("pong");
+    }
+};
+
+class SubCommandParser {
+    const int m_argc;
+    std::vector<std::string> m_argv;
+    std::unordered_map<std::string, std::unique_ptr<SubCommandHandler>> m_cmds;
+
+    void addCmds() {
+        m_cmds.emplace("new", std::make_unique<NewHandler>());
+    }
+
+public:
+
+    SubCommandParser(int argc, char* argv[]) : m_argc(argc) {
+        m_argv.reserve(argc);
+
+        for (int i = 0; i < argc; i++) {
+            m_argv.push_back(argv[i]);
+        }
+    }
+
+    void runCmds() {
+        addCmds();
+
+        if (m_argc < 2) {
+            std::println("Not enough args");
+            return;
+        }
+
+        auto it = m_cmds.find(m_argv[1]);
+
+        if (it == m_cmds.end()) {
+            std::println("subcmd not found");
+            return;
+        }
+
+        it->second->execute();
+    };
+};
 
 class MigrationNode {
     public:
@@ -118,8 +170,12 @@ void MigrationList::loadMigrations(const std::string_view path) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     MigrationList migs;
+
+    SubCommandParser subCmd { argc, argv };
+
+    subCmd.runCmds();
 
     migs.loadMigrations();
 
