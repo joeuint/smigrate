@@ -27,7 +27,8 @@ A future planned `new` sub command will do this for you.
 == Contributing ==
 All contributions must adhere to the Developer Certificate of Origin as
 described in doc/developer-certificate-of-origin.txt or
-developercertificate.org
+developercertificate.org. All commits must be signed '-s' flag off which
+constitute an agreement with the DCO.
  
 All contributions must be licensed under the BSD-3-Clause License as
 described in the LICENSE file.
