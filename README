@@ -1,0 +1,36 @@
+                                smigrate
+== Building ==
+To build, simply use cmake.
+
+```sh
+mkdir build
+cmake -S . -B build
+cmake --build build
+```
+
+== Using ==
+All migrations have a specific format. You need to create a directory
+called `migrations` relative to your working directory. A migrations
+folder should have migrations in the format of
+<number>_<name>_.<up/down>.sql where:
+
+number is a 6 digit number padded by 0's (e.g 000067).
+
+name is a human readable identifier only consisting of upper or
+lowercase letters or an underline (_).
+
+up/down describes whether the migration applys or reverts transactions.
+It can be either up or down. Both are required for all migrations.
+
+A future planned `new` sub command will do this for you.
+
+== Contributing ==
+All contributions must adhere to the Developer Certificate of Origin as
+described in doc/developer-certificate-of-origin.txt or
+developercertificate.org
+ 
+All contributions must be licensed under the BSD-3-Clause License as
+described in the LICENSE file.
+
+== License ==
+See LICENSE file.
