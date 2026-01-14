@@ -22,8 +22,6 @@ lowercase letters or an underline (_).
 up/down describes whether the migration applys or reverts transactions.
 It can be either up or down. Both are required for all migrations.
 
-A future planned `new` sub command will do this for you.
-
 == Contributing ==
 All contributions must adhere to the Developer Certificate of Origin as
 described in doc/developer-certificate-of-origin.txt or
