@@ -1,4 +1,5 @@
 #include <cctype>
+#include <expected>
 #include <memory>
 #include <vector>
 #include <fstream>
@@ -46,7 +47,7 @@ public:
 public:
     ~MigrationList();
     void push(const int id, const std::string_view name, const std::string_view upFile, const std::string_view downFile);
-    void loadMigrations(const std::string_view path = "./migrations");
+    std::expected<void, std::string> loadMigrations(const std::string_view path = "./migrations");
     void print();
 };
 
@@ -91,7 +92,11 @@ MigrationList::~MigrationList() {
 MigrationNode::MigrationNode(const int id, const std::string_view name, std::string_view upFile, std::string_view downFile)
     : id(id), name(name), upFile(upFile), downFile(downFile) {};
 
-void MigrationList::loadMigrations(const std::string_view path) {
+[[nodiscard]] std::expected<void, std::string> MigrationList::loadMigrations(const std::string_view path) {
+    if (!std::filesystem::is_directory(path)) {
+        return std::unexpected("No ./migrations directory found.");
+    }
+
     for (const auto& ent : std::filesystem::directory_iterator(path)) {
         if (!ent.is_regular_file() && !ent.path().has_filename()) {
             continue;
@@ -122,6 +127,8 @@ void MigrationList::loadMigrations(const std::string_view path) {
 
         push(std::stoi(matches[1].str()), matches[2].str(), path, downFilePath);
     }
+
+    return {};
 }
 // TODO: It's all a mess. break it into seperate files.
 class SubCommandHandler {
@@ -166,9 +173,12 @@ class NewHandler : public SubCommandHandler {
             return;
         }
                 
+        auto migrationResult { migs.loadMigrations() };
 
-        migs.loadMigrations();
-
+        if (!migrationResult) {
+            std::println("{}", migrationResult.error());
+            return;
+        };
 
         int newId = getNewNodeId(migs.m_tail);
 
