@@ -1,5 +1,6 @@
 #include <cctype>
 #include <memory>
+#include <vector>
 #include <fstream>
 #include <print>
 #include <cassert>
