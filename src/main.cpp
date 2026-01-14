@@ -125,7 +125,7 @@ void MigrationList::loadMigrations(const std::string_view path) {
 // TODO: It's all a mess. break it into seperate files.
 class SubCommandHandler {
 public:
-    virtual void execute(int argc, const std::vector<std::string>& argv, MigrationList& migs) = 0;
+    virtual void execute(const std::vector<std::string>& argv, MigrationList& migs) = 0;
     virtual ~SubCommandHandler() = default;
 };
 
@@ -153,9 +153,9 @@ class NewHandler : public SubCommandHandler {
 
     }
 
-    void execute(int argc, const std::vector<std::string>& argv, MigrationList& migs) override {
+    void execute(const std::vector<std::string>& argv, MigrationList& migs) override {
 
-        if (argc < 3) {
+        if (argv.size() < 3) {
             std::println("Not enough arguments");
             return;
         }
@@ -189,7 +189,6 @@ class NewHandler : public SubCommandHandler {
 };
 
 class SubCommandParser {
-    const int m_argc;
     std::vector<std::string> m_argv;
     
     MigrationList& m_migs;
@@ -202,7 +201,7 @@ class SubCommandParser {
 
 public:
 
-    SubCommandParser(int argc, char* argv[], MigrationList& migs) : m_argc(argc), m_migs(migs) {
+    SubCommandParser(int argc, char* argv[], MigrationList& migs) : m_migs(migs) {
         m_argv.reserve(argc);
 
         for (int i = 0; i < argc; i++) {
@@ -213,7 +212,7 @@ public:
     void runCmds() {
         addCmds();
 
-        if (m_argc < 2) {
+        if (m_argv.size() < 2) {
             std::println("Not enough arguments");
             return;
         }
@@ -225,7 +224,7 @@ public:
             return;
         }
 
-        it->second->execute(m_argc, m_argv, m_migs);
+        it->second->execute(m_argv, m_migs);
     };
 };
 
