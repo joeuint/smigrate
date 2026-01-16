@@ -7,4 +7,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(smigrate)
 
 add_executable(smigrate)
-target_sources(smigrate PRIVATE src/main.cpp)
+target_sources(smigrate 
+    PRIVATE 
+    src/main.cpp
+    src/MigrationList.cpp
+    src/MigrationNode.cpp
+    src/SubCommandParser.cpp
+    src/subcmds/NewHandler.cpp
+)
